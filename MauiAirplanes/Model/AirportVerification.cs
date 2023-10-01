@@ -23,9 +23,8 @@ public static class AirportVerification
     /// <exception cref="AirportException">Input came back null</exception>
     public static string VerifyID(string id)
     {
-        id = id.ToUpper();
-        if(id.Length < 3 || id.Length > 4) throw new AirportException("Invalid Airport ID"); // throw if invalid input
-        return id;
+        if(id == null || id.Length < 3 || id.Length > 4) throw new AirportException("Invalid Airport ID"); // throw if invalid input
+        return id.ToUpper();
     }
     /// <summary>
     /// Verify airport city, throwing error if invalid

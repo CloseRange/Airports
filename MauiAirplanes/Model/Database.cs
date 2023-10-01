@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 
 namespace Airport;
 
-public class Database : IDatabase
-{
+public class Database : IDatabase {
     // TODO: These variables should absoultly not be hardcoded into the code directly this way.
     // Big boy security risk. 
     private NpgsqlConnectionStringBuilder sqlConnectString = new NpgsqlConnectionStringBuilder {
@@ -40,27 +39,8 @@ public class Database : IDatabase
         {
             cmd.ExecuteNonQuery();
         }
-        using(NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO airports(id, city, visitDate, rating) VALUES(@id, @city, @visitDate, @rating)", connection)) {
-            cmd.Parameters.AddWithValue("id", "ABCD");
-            cmd.Parameters.AddWithValue("city", "Oshkosh");
-            cmd.Parameters.AddWithValue("visitDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            cmd.Parameters.AddWithValue("rating", (short)3);
-            try
-            {
-                cmd.ExecuteNonQuery();
-            } catch(Exception ex)
-            {
-                Console.WriteLine("DUPLICATE");
-            }
-        }
 
-        using(NpgsqlCommand cmd = new NpgsqlCommand("SELECT id, city FROM airports", connection)) {
-            using(var reader = cmd.ExecuteReader())
-            {
-                while(reader.Read()) Console.Write("\tairport {0}: {1}\n", reader.GetValue(0), reader.GetValue(1));
-            }
-        }
-        
+        // Inital selection. Loads DB into cache immidiatly 
         SelectAllAirports();
     }
 
@@ -71,27 +51,18 @@ public class Database : IDatabase
     public ObservableCollection<Airport> SelectAllAirports()
     {
         VerifyConnection();
-        try
+        // clear old airports
+        airports.Clear();
+        // Make command to select every airport from db
+        NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM airports", connection);
+        // iterate over every airport, adding to list
+        using(var reader = cmd.ExecuteReader())
         {
-            // clear old airports
-            airports.Clear();
-            // Make command to select every airport from db
-            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM airports", connection);
-            // iterate over every airport, adding to list
-            using(var reader = cmd.ExecuteReader())
-            {
-                while(reader.Read())
-                {
-                    Console.WriteLine("{0} -> {1}: {2} | {3}", (string)reader["id"], (string)reader["city"], reader.GetDateTime(2), (short)reader["rating"]);
-                    Airports.Add(new Airport((string)reader["id"], (string)reader["city"], reader.GetDateTime(2), (short)reader["rating"]));
-                }
-            }
-
-            return Airports; // return the db struct
-        } catch
-        {
-            throw new AirportException("DataBase Error!\nCould not select all airports.");
+            while(reader.Read())
+                Airports.Add(new Airport((string)reader["id"], (string)reader["city"], reader.GetDateTime(2), (short)reader["rating"]));
         }
+
+        return Airports; // return the db struct
     }
     /// <summary>
     /// Returns airport with given id, null if not found
@@ -101,14 +72,17 @@ public class Database : IDatabase
     public Airport SelectAirport(string id)
     {
         VerifyConnection();
-        // create command to find airport with the provided id
-        NpgsqlCommand cmd = new NpgsqlCommand("SELECT id, city, visitDate, rating FROM airports WHERE id='" + id + "'");
-
-        // iterate over every airport found (there should only be 1) and return it
-        var reader = cmd.ExecuteReader();
         Airport airport = null;
-        while(reader.Read())
-            airport = new Airport((string)reader["id"], (string)reader["city"], (DateTime)reader["visitDate"], (int)reader["rating"]);
+        // create command to find airport with the provided id
+        using(NpgsqlCommand cmd = new NpgsqlCommand("SELECT id, city, visitDate, rating FROM airports WHERE id='" + id + "'"))
+        {
+            // iterate over every airport found (there should only be 1) and return it
+            using(var reader = cmd.ExecuteReader())
+            {
+                while(reader.Read())
+                    airport = new Airport((string)reader["id"], (string)reader["city"], (DateTime)reader["visitDate"], (int)reader["rating"]);
+            }
+        }
         return airport;
     }
     /// <summary>
@@ -118,9 +92,25 @@ public class Database : IDatabase
     /// <returns></returns>
     public bool InsertAirport(Airport airport)
     {
-        if (Airports == null || SelectAirport(airport.Id) != null) return false; // return if airport already exists
-        Airports.Add(airport);
-        return true;
+        VerifyConnection();
+        // throws error if already exists
+        try
+        {
+            // Command to add airport into database
+            using(NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO airports(id, city, visitDate, rating) VALUES(@id, @city, @visitDate, @rating)", connection))
+            {
+                // Populate the paramaters of the command with the airport variables
+                cmd.Parameters.AddWithValue("id", airport.Id);
+                cmd.Parameters.AddWithValue("city", airport.City);
+                cmd.Parameters.AddWithValue("visitDate", airport.DateVisited.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("rating", (short)airport.Rating);
+                cmd.ExecuteNonQuery();
+            }
+            Airports.Add(airport); // Add the airport directly into our local cached list. Prevents having to do a second lookup
+            return true;
+        } catch {
+            throw new AirportException("Duplicate airport!");
+        }
     }
     /// <summary>
     /// Removes airport from list
@@ -129,10 +119,28 @@ public class Database : IDatabase
     /// <returns>true if successfully removed</returns>
     public bool DeleteAirport(string id)
     {
-        Airport airport = SelectAirport(id);   // find the airport in the list
-        if (airport == null || Airports == null) return false; // return if the airport doesnt exist
-        Airports.Remove(airport); // remove the airport
-        return true;
+        VerifyConnection();
+        try
+        {
+            // create command to find delete with the provided id
+            using(NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM airports where id='" + id + "'", connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+            // iterate over every airpirt. remove the selected airport from cache
+            foreach(Airport airport in Airports)
+            {
+                if(airport.Id == id)
+                {
+                    Airports.Remove(airport);
+                    return true;
+                }
+            }
+            return false;
+        } catch
+        {
+            throw new AirportException("No id found!");
+        }
     }
     /// <summary>
     /// Updates airport in list
@@ -141,12 +149,28 @@ public class Database : IDatabase
     /// <returns>true if successfully modified</returns>
     public bool UpdateAirport(Airport airport)
     {
-        if (Airports == null) return false; // if airport db is null return
-        int index = Airports.IndexOf(airport); // get index of airport to edit
-        if (index < 0) return false;
-        Airports[index].CopyData(airport);
+        VerifyConnection();
 
-        return true;
+        try
+        {
+            // Command to update airport using provided data
+            using(NpgsqlCommand cmd = new NpgsqlCommand("UPDATE airports SET city=@city, visitDate=@visitDate, rating=@rating WHERE id=@id", connection))
+            {
+                // Populate the paramaters of the command with the airport variables
+                cmd.Parameters.AddWithValue("id", airport.Id);
+                cmd.Parameters.AddWithValue("city", airport.City);
+                cmd.Parameters.AddWithValue("visitDate", airport.DateVisited.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("rating", (short)airport.Rating);
+                cmd.ExecuteNonQuery();
+            }
+            // Update local cache
+            int index = Airports.IndexOf(airport); // get index of airport to edit
+            Airports[index].CopyData(airport); // no need to verify index < 0. Will throw error, resulting in popup message.
+            return true;
+        } catch
+        {
+            throw new AirportException("No airport exists!");
+        }
     }
 
 
