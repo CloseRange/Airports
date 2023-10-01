@@ -4,6 +4,35 @@
         <name>MauiAirplanes</name>
     </assembly>
     <members>
+        <member name="M:MauiAirplanes.MainPage.AddAirport(System.Object,System.EventArgs)">
+            <summary>
+            Adds airport to the database
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MauiAirplanes.MainPage.EditAirport(System.Object,System.EventArgs)">
+            <summary>
+            Edit pre-existing airport
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MauiAirplanes.MainPage.DeleteAirport(System.Object,System.EventArgs)">
+            <summary>
+            Delete existing airport
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MauiAirplanes.MainPage.CalculateStats(System.Object,System.EventArgs)">
+            <summary>
+            Display a popup message with statistics.
+            Note: Lab3 never gave clear guide on how to display the statistics so I just went generic DisplayAlert
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
         <member name="M:MauiAirplanes.MainPage.ClearEntrys">
             <summary>
             Clears all input entrys
@@ -20,6 +49,19 @@
             Set all my data to the proveded airport
             </summary>
             <param name="airport"></param>
+        </member>
+        <member name="M:Airport.Airport.Equals(System.Object)">
+            <summary>
+            Test eif 2 objects are equal.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.Airport.ToString">
+            <summary>
+            Formats airport -> ID - City, VisitDate, Rating
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Airport.AirportException">
             <summary>
@@ -98,7 +140,7 @@
         </member>
         <member name="M:Airport.BusinessLogic.CalculateStatistics">
             <summary>
-            
+            Returns a detailed message about how many airports were visited and how far until your next level!
             </summary>
             <returns></returns>
         </member>
@@ -110,7 +152,7 @@
         </member>
         <member name="M:Airport.Database.SelectAllAirports">
             <summary>
-            Get all airports, loads from file into db
+            Get all airports
             </summary>
             <returns></returns>
         </member>

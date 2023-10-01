@@ -35,10 +35,9 @@
                 <Entry Grid.Column="2" Placeholder="Date" x:Name="AirportDateENT"/>
                 <Entry Grid.Column="3" Placeholder="# Rating" x:Name="AirportRatingENT" Text="2"/>
             </Grid>
-            <Grid RowDefinitions="*" ColumnDefinitions="*,*">
-                <Button Grid.Column="0" TextColor="White" Text="Add Airport" Clicked="AddAirport"/>
-                <Button Grid.Column="1" TextColor="White" Text="Edit Airport" Clicked="EditAirport"/>
-            </Grid>
+            <Button Grid.Column="0" TextColor="White" Text="Add Airport" Clicked="AddAirport"/>
+            <Button Grid.Column="1" TextColor="White" Text="Edit Airport" Clicked="EditAirport"/>
+            <Button Grid.Column="2" TextColor="White" Text="Calculate Statistics" Clicked="CalculateStats"/>
         </VerticalStackLayout>
     </ScrollView>
 

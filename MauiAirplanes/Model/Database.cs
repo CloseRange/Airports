@@ -41,27 +41,25 @@ public class Database : IDatabase {
         }
 
         // Inital selection. Loads DB into cache immidiatly 
-        SelectAllAirports();
+        // Make command to select every airport from db
+        using(NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM airports", connection))
+        {
+            // iterate over every airport, adding to list
+            using(var reader = cmd.ExecuteReader())
+            {
+                while(reader.Read())
+                    Airports.Add(new Airport((string)reader["id"], (string)reader["city"], reader.GetDateTime(2), (short)reader["rating"]));
+            }
+
+        }
     }
 
     /// <summary>
-    /// Get all airports, loads from file into db
+    /// Get all airports
     /// </summary>
     /// <returns></returns>
     public ObservableCollection<Airport> SelectAllAirports()
     {
-        VerifyConnection();
-        // clear old airports
-        airports.Clear();
-        // Make command to select every airport from db
-        NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM airports", connection);
-        // iterate over every airport, adding to list
-        using(var reader = cmd.ExecuteReader())
-        {
-            while(reader.Read())
-                Airports.Add(new Airport((string)reader["id"], (string)reader["city"], reader.GetDateTime(2), (short)reader["rating"]));
-        }
-
         return Airports; // return the db struct
     }
     /// <summary>

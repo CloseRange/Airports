@@ -80,6 +80,8 @@ public class Airport : INotifyPropertyChanged {
     // 2 Aiprorts are equal iff their id's are equal
     public static bool operator ==(Airport? a, Airport? b)
     {
+        // if a and b have the same id -> true
+        // if either are null -> false
         if(ReferenceEquals(a, b)) return true;
         if(ReferenceEquals(a, null)) return false;
         if(ReferenceEquals(b, null)) return false;
@@ -87,13 +89,23 @@ public class Airport : INotifyPropertyChanged {
     }
     public static bool operator !=(Airport? a, Airport? b) { return !(a == b); }
 
+    /// <summary>
+    /// Test eif 2 objects are equal.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object? obj)
     {
+        // Test if obj is null, it is an airport, and that they have the same airport id
         if(ReferenceEquals(this, obj)) return true;
         if(ReferenceEquals(obj, null)) return false;
         if(obj.GetType() != typeof(Airport)) return false;
         return (Airport)obj == this;
     }
+    /// <summary>
+    /// Formats airport -> ID - City, VisitDate, Rating
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
         return string.Format("{0} - {1}, {2}, {3}", id, city, dateVisited.ToString("M/d/yyyy"), rating);

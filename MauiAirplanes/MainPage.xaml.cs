@@ -13,72 +13,12 @@ public partial class MainPage : ContentPage
 		InitializeComponent();
 
         BindingContext = logic;
-        /*
-        var connStringBuilder = new NpgsqlConnectionStringBuilder();
-        connStringBuilder.SslMode = SslMode.VerifyFull;
-        string? databaseUrlEnv = Environment.GetEnvironmentVariable("DATABASE_URL");
-        if(databaseUrlEnv == null)
-        {
-            connStringBuilder.Host = "minty-hisser-13095.5xj.cockroachlabs.cloud";
-            connStringBuilder.Port = 26257;
-            connStringBuilder.Username = "michael";
-            connStringBuilder.Password = "jwlJ2cSIuqax2x1LCBYnog";
-        } else
-        { // postgresql://michael:<ENTER-SQL-USER-PASSWORD>@minty-hisser-13095.5xj.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full
-            Uri databaseUrl = new Uri(databaseUrlEnv);
-            connStringBuilder.Host = databaseUrl.Host;
-            connStringBuilder.Port = databaseUrl.Port;
-            var items = databaseUrl.UserInfo.Split(new[] { ':' });
-            if(items.Length > 0) connStringBuilder.Username = items[0];
-            if(items.Length > 1) connStringBuilder.Password = items[1];
-        }
-        connStringBuilder.Database = "defaultdb";
-        Simple(connStringBuilder.ConnectionString);*/
     }
-    static void Simple(string connString)
-    {
-        using(var conn = new NpgsqlConnection(connString))
-        {
-            conn.Open();
-
-            // Create the "accounts" table.
-            using(var cmd = new NpgsqlCommand("CREATE TABLE IF NOT EXISTS accounts (id INT PRIMARY KEY, balance INT)", conn))
-            {
-                cmd.ExecuteNonQuery();
-            }
-            // Insert two rows into the "accounts" table.
-            using(var cmd = new NpgsqlCommand())
-            {
-                cmd.Connection = conn;
-                cmd.CommandText = "UPSERT INTO accounts(id, balance) VALUES(@id1, @val1), (@id2, @val2)";
-                cmd.Parameters.AddWithValue("id1", 1);
-                cmd.Parameters.AddWithValue("val1", 1000);
-                cmd.Parameters.AddWithValue("id2", 2);
-                cmd.Parameters.AddWithValue("val2", 250);
-                cmd.ExecuteNonQuery();
-            }
-
-            // Print out the balances.
-            System.Console.WriteLine("Initial balances:");
-            using(var cmd = new NpgsqlCommand("SELECT id, balance FROM accounts", conn))
-            using(var reader = cmd.ExecuteReader())
-                while(reader.Read())
-                    Console.Write("\taccount {0}: {1}\n", reader.GetValue(0), reader.GetValue(1));
-        }
-    }
-
-    private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
-		/*
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
-		*/
-	}
+    /// <summary>
+    /// Adds airport to the database
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
 	public void AddAirport(object sender, EventArgs e)
     {
         try
@@ -94,6 +34,11 @@ public partial class MainPage : ContentPage
             DisplayAlert("Add Failed!", ae.Message, "OK");
         }
     }
+    /// <summary>
+    /// Edit pre-existing airport
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
 	private void EditAirport(object sender, EventArgs e)
     {
         try
@@ -109,11 +54,20 @@ public partial class MainPage : ContentPage
             DisplayAlert("Edit Failed!", ae.Message, "OK");
         }
     }
-    private void DeleteAirport(object sender, EventArgs e)
+    /// <summary>
+    /// Delete existing airport
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void DeleteAirport(object sender, EventArgs e)
     {
         try {
             Airport airport = CV.SelectedItem as Airport;
-            logic.DeleteAirport(airport.Id);
+            bool delete = await DisplayAlert("Delete Airport?", "Are you sure you want to remove this airport?\nAction cannot be undone!", "Delete", "Cancel");
+            if(delete)
+            {
+                logic.DeleteAirport(airport.Id);
+            }
         } catch(AirportException ae)
             {
             DisplayAlert("Delete Failed!", ae.Message, "OK");
@@ -121,6 +75,16 @@ public partial class MainPage : ContentPage
         {
             DisplayAlert("Delete Failed!", "Invalid selection", "Ok");
         }
+    }
+    /// <summary>
+    /// Display a popup message with statistics.
+    /// Note: Lab3 never gave clear guide on how to display the statistics so I just went generic DisplayAlert
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void CalculateStats(object sender, EventArgs e)
+    {
+        DisplayAlert("Statistics", logic.CalculateStatistics(), "OK");
     }
     /// <summary>
     /// Clears all input entrys
