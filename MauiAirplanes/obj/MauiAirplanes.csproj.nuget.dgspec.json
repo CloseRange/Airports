@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\SchoolWork\\SoftwareEngineering\\Lab3Airplanes\\MauiAirplanes\\MauiAirplanes.csproj": {}
+    "D:\\SchoolWork\\SoftwareEngineering\\Airports\\Airports\\MauiAirplanes\\MauiAirplanes.csproj": {}
   },
   "projects": {
-    "D:\\SchoolWork\\SoftwareEngineering\\Lab3Airplanes\\MauiAirplanes\\MauiAirplanes.csproj": {
+    "D:\\SchoolWork\\SoftwareEngineering\\Airports\\Airports\\MauiAirplanes\\MauiAirplanes.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\SchoolWork\\SoftwareEngineering\\Lab3Airplanes\\MauiAirplanes\\MauiAirplanes.csproj",
+        "projectUniqueName": "D:\\SchoolWork\\SoftwareEngineering\\Airports\\Airports\\MauiAirplanes\\MauiAirplanes.csproj",
         "projectName": "MauiAirplanes",
-        "projectPath": "D:\\SchoolWork\\SoftwareEngineering\\Lab3Airplanes\\MauiAirplanes\\MauiAirplanes.csproj",
+        "projectPath": "D:\\SchoolWork\\SoftwareEngineering\\Airports\\Airports\\MauiAirplanes\\MauiAirplanes.csproj",
         "packagesPath": "C:\\Users\\15416\\.nuget\\packages\\",
-        "outputPath": "D:\\SchoolWork\\SoftwareEngineering\\Lab3Airplanes\\MauiAirplanes\\obj\\",
+        "outputPath": "D:\\SchoolWork\\SoftwareEngineering\\Airports\\Airports\\MauiAirplanes\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -89,6 +89,10 @@
               "target": "Package",
               "version": "[7.0.86, )",
               "autoReferenced": true
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[7.0.6, )"
             },
             "Xamarin.Android.Glide": {
               "target": "Package",
@@ -207,6 +211,10 @@
               "target": "Package",
               "version": "[7.0.86, )",
               "autoReferenced": true
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[7.0.6, )"
             }
           },
           "imports": [
@@ -270,6 +278,10 @@
               "target": "Package",
               "version": "[7.0.86, )",
               "autoReferenced": true
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[7.0.6, )"
             }
           },
           "imports": [
@@ -350,6 +362,10 @@
               "target": "Package",
               "version": "[1.2.221209.1, )",
               "autoReferenced": true
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[7.0.6, )"
             }
           },
           "imports": [

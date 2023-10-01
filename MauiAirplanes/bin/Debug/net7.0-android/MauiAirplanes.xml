@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MauiAirplanes</name>
+    </assembly>
+    <members>
+        <member name="M:MauiAirplanes.MainPage.ClearEntrys">
+            <summary>
+            Clears all input entrys
+            </summary>
+        </member>
+        <member name="M:Airport.Airport.SetDirty(System.String)">
+            <summary>
+            Property changed. Notify xaml
+            </summary>
+            <param name="propertyName"></param>
+        </member>
+        <member name="M:Airport.Airport.CopyData(Airport.Airport)">
+            <summary>
+            Set all my data to the proveded airport
+            </summary>
+            <param name="airport"></param>
+        </member>
+        <member name="T:Airport.AirportException">
+            <summary>
+            Do we need an airport exception? Probobly not.
+            I use it so that I can be particular about what exception I'm catching:
+            If any exception is thrown that I did not intend (aka not an airport excpetion) I want the program to crash in general as thats unintentional.
+            </summary>
+        </member>
+        <member name="T:Airport.AirportVerification">
+            <summary>
+            This static class is souly used for verifying paramaters for airports
+            </summary>
+        </member>
+        <member name="M:Airport.AirportVerification.VerifyID(System.String)">
+            <summary>
+            Verify airport id, throwing error if invalid
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <exception cref="T:Airport.AirportException">Input came back null</exception>
+        </member>
+        <member name="M:Airport.AirportVerification.VerifyCity(System.String)">
+            <summary>
+            Verify airport city, throwing error if invalid
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <exception cref="T:Airport.AirportException">Inputed value is not a valid number</exception>
+        </member>
+        <member name="M:Airport.AirportVerification.VerifyDate(System.String)">
+            <summary>
+            Verify date, throwing error if invalid
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <exception cref="T:Airport.AirportException">input was not a valid DateTime (mm/dd/yyyy)</exception>
+        </member>
+        <member name="M:Airport.AirportVerification.VerifyRating(System.String)">
+            <summary>
+            Verify a rating, throwing if its not valid
+            </summary>
+            <param name="rating"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.BusinessLogic.AddAirport(System.String,System.String,System.DateTime,System.Int32)">
+            <summary>
+            Adds an airport with the specific fields to the database
+            </summary>
+            <param name="id"></param>
+            <param name="city"></param>
+            <param name="dateVisited"></param>
+            <param name="rating"></param>
+        </member>
+        <member name="M:Airport.BusinessLogic.DeleteAirport(System.String)">
+            <summary>
+            Delete the specified airport from the database
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.BusinessLogic.EditAirport(System.String,System.String,System.DateTime,System.Int32)">
+            <summary>
+            Edits the spefified airport with the new values. Does not modify the id
+            </summary>
+            <param name="id"></param>
+            <param name="city"></param>
+            <param name="dateVisited"></param>
+            <param name="rating"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.BusinessLogic.FindAirport(System.String)">
+            <summary>
+            Finds the airport object, null if not found.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:Airport.BusinessLogic.CalculateStatistics">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.BusinessLogic.GetAirports">
+            <summary>
+            Returns a list of all airports
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.Database.SelectAllAirports">
+            <summary>
+            Get all airports, loads from file into db
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.Database.SelectAirport(System.String)">
+            <summary>
+            Returns airport with given id, null if not found
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.Database.InsertAirport(Airport.Airport)">
+            <summary>
+            Adds airport to list
+            </summary>
+            <param name="airport"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.Database.DeleteAirport(System.String)">
+            <summary>
+            Removes airport from list
+            </summary>
+            <param name="id"></param>
+            <returns>true if successfully removed</returns>
+        </member>
+        <member name="M:Airport.Database.UpdateAirport(Airport.Airport)">
+            <summary>
+            Updates airport in list
+            </summary>
+            <param name="airport"></param>
+            <returns>true if successfully modified</returns>
+        </member>
+        <member name="M:Airport.Database.VerifyConnection">
+            <summary>
+            Ensures that the database is connected! Throws error if not
+            </summary>
+        </member>
+        <member name="M:Airport.IBusinessLogic.AddAirport(System.String,System.String,System.DateTime,System.Int32)">
+            <summary>
+            Adds an airport with the specific fields to the database
+            </summary>
+            <param name="id"></param>
+            <param name="city"></param>
+            <param name="dateVisited"></param>
+            <param name="rating"></param>
+        </member>
+        <member name="M:Airport.IBusinessLogic.DeleteAirport(System.String)">
+            <summary>
+            Delete the specified airport from the database
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IBusinessLogic.EditAirport(System.String,System.String,System.DateTime,System.Int32)">
+            <summary>
+            Edits the spefified airport with the new values. Does not modify the id
+            </summary>
+            <param name="id"></param>
+            <param name="city"></param>
+            <param name="dateVisited"></param>
+            <param name="rating"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IBusinessLogic.FindAirport(System.String)">
+            <summary>
+            Finds the airport object, null if not found.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:Airport.IBusinessLogic.CalculateStatistics">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IBusinessLogic.GetAirports">
+            <summary>
+            Returns a list of all airports
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IDatabase.SelectAllAirports">
+            <summary>
+            Get all airports 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IDatabase.SelectAirport(System.String)">
+            <summary>
+            Returns airport with given id, null if not found
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IDatabase.InsertAirport(Airport.Airport)">
+            <summary>
+            Adds airport to list
+            </summary>
+            <param name="airport"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IDatabase.DeleteAirport(System.String)">
+            <summary>
+            Removes airport from list
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Airport.IDatabase.UpdateAirport(Airport.Airport)">
+            <summary>
+            Updates airport in list
+            </summary>
+            <param name="airport"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

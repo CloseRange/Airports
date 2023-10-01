@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,16 +12,56 @@ namespace Airport;
 
 public class Database : IDatabase
 {
+    // TODO: These variables should absoultly not be hardcoded into the code directly this way.
+    // Big boy security risk. 
+    private NpgsqlConnectionStringBuilder sqlConnectString = new NpgsqlConnectionStringBuilder {
+        SslMode = SslMode.VerifyFull,
+        Host = "minty-hisser-13095.5xj.cockroachlabs.cloud",
+        Port = 26257,
+        Username = "michael",
+        Password = "jwlJ2cSIuqax2x1LCBYnog",
+        Database = "defaultdb"
+    };
+
+    private NpgsqlConnection connection = null; // Conection object. Only initialize once!
+
     private ObservableCollection<Airport> airports = new ObservableCollection<Airport>();
     public ObservableCollection<Airport> Airports
     {
         get { return airports; }
         set { airports = value; }
     }
-    protected string filename = FileSystem.Current.AppDataDirectory + "/airport.db"; // TODO: filename shouldn't be hardcoded. At least needs a way to modify.
     public Database() // load db immidiatly on creating
     {
-        Load();
+        connection = new NpgsqlConnection(sqlConnectString.ConnectionString);
+        connection.Open();
+
+        using(NpgsqlCommand cmd = new NpgsqlCommand("CREATE TABLE IF NOT EXISTS airports (id VARCHAR(4) PRIMARY KEY, city VARCHAR(25), visitDate DATE, rating SMALLINT)", connection))
+        {
+            cmd.ExecuteNonQuery();
+        }
+        using(NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO airports(id, city, visitDate, rating) VALUES(@id, @city, @visitDate, @rating)", connection)) {
+            cmd.Parameters.AddWithValue("id", "ABCD");
+            cmd.Parameters.AddWithValue("city", "Oshkosh");
+            cmd.Parameters.AddWithValue("visitDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            cmd.Parameters.AddWithValue("rating", (short)3);
+            try
+            {
+                cmd.ExecuteNonQuery();
+            } catch(Exception ex)
+            {
+                Console.WriteLine("DUPLICATE");
+            }
+        }
+
+        using(NpgsqlCommand cmd = new NpgsqlCommand("SELECT id, city FROM airports", connection)) {
+            using(var reader = cmd.ExecuteReader())
+            {
+                while(reader.Read()) Console.Write("\tairport {0}: {1}\n", reader.GetValue(0), reader.GetValue(1));
+            }
+        }
+        
+        SelectAllAirports();
     }
 
     /// <summary>
@@ -29,8 +70,28 @@ public class Database : IDatabase
     /// <returns></returns>
     public ObservableCollection<Airport> SelectAllAirports()
     {
-        Load(); // load db
-        return Airports; // return the db struct
+        VerifyConnection();
+        try
+        {
+            // clear old airports
+            airports.Clear();
+            // Make command to select every airport from db
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM airports", connection);
+            // iterate over every airport, adding to list
+            using(var reader = cmd.ExecuteReader())
+            {
+                while(reader.Read())
+                {
+                    Console.WriteLine("{0} -> {1}: {2} | {3}", (string)reader["id"], (string)reader["city"], reader.GetDateTime(2), (short)reader["rating"]);
+                    Airports.Add(new Airport((string)reader["id"], (string)reader["city"], reader.GetDateTime(2), (short)reader["rating"]));
+                }
+            }
+
+            return Airports; // return the db struct
+        } catch
+        {
+            throw new AirportException("DataBase Error!\nCould not select all airports.");
+        }
     }
     /// <summary>
     /// Returns airport with given id, null if not found
@@ -39,10 +100,16 @@ public class Database : IDatabase
     /// <returns></returns>
     public Airport SelectAirport(string id)
     {
-        if (Airports == null) return null;
-        foreach (Airport airport in Airports) // iterate over list
-            if (airport.Id == id) return airport; // if found, return the selected airport
-        return null; // null if not found
+        VerifyConnection();
+        // create command to find airport with the provided id
+        NpgsqlCommand cmd = new NpgsqlCommand("SELECT id, city, visitDate, rating FROM airports WHERE id='" + id + "'");
+
+        // iterate over every airport found (there should only be 1) and return it
+        var reader = cmd.ExecuteReader();
+        Airport airport = null;
+        while(reader.Read())
+            airport = new Airport((string)reader["id"], (string)reader["city"], (DateTime)reader["visitDate"], (int)reader["rating"]);
+        return airport;
     }
     /// <summary>
     /// Adds airport to list
@@ -53,7 +120,6 @@ public class Database : IDatabase
     {
         if (Airports == null || SelectAirport(airport.Id) != null) return false; // return if airport already exists
         Airports.Add(airport);
-        Save();
         return true;
     }
     /// <summary>
@@ -66,7 +132,6 @@ public class Database : IDatabase
         Airport airport = SelectAirport(id);   // find the airport in the list
         if (airport == null || Airports == null) return false; // return if the airport doesnt exist
         Airports.Remove(airport); // remove the airport
-        Save();
         return true;
     }
     /// <summary>
@@ -81,35 +146,16 @@ public class Database : IDatabase
         if (index < 0) return false;
         Airports[index].CopyData(airport);
 
-        Save();
         return true;
     }
 
 
 
-    // ========== MY HELPER FUNCTIONS ================
-
-
     /// <summary>
-    /// Save data to the file
+    /// Ensures that the database is connected! Throws error if not
     /// </summary>
-    private void Save()
+    private void VerifyConnection()
     {
-        // options object : indented makes file look nicer
-        JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
-        // write to file
-        File.WriteAllText(filename, JsonSerializer.Serialize(Airports, options));
-    }
-    /// <summary>
-    /// Load data from the file.
-    /// </summary>
-    private void Load()
-    {
-        if (File.Exists(filename))
-        {
-            string json = File.ReadAllText(filename);
-            ObservableCollection<Airport> toload = JsonSerializer.Deserialize<ObservableCollection<Airport>>(json);
-            if (toload != null) Airports = toload;
-        }
+        if(connection == null) throw new AirportException("Error! SQL was unable to verify connection!");
     }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pr03za50MEahGIUkOE+rYYW5cN0JXBNNFQGoYIyT8C3O1XydS+a6U4vvf7EVnIXxBTPKrr0T9k+4vvgd6Kg++A==",
+  "dgSpecHash": "/s2n7gXsKCteHTLzt1+KYpP397eTwR+AriAoBMxshJ1bDNPjXh0/HkstuoDhAd//u8IZO+pFQgHd4ankHnixBg==",
   "success": true,
-  "projectFilePath": "D:\\SchoolWork\\SoftwareEngineering\\Lab3Airplanes\\MauiAirplanes\\MauiAirplanes.csproj",
+  "projectFilePath": "D:\\SchoolWork\\SoftwareEngineering\\Airports\\Airports\\MauiAirplanes\\MauiAirplanes.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\15416\\.nuget\\packages\\googlegson\\2.9.1.1\\googlegson.2.9.1.1.nupkg.sha512",
     "C:\\Users\\15416\\.nuget\\packages\\microsoft.extensions.configuration\\7.0.0\\microsoft.extensions.configuration.7.0.0.nupkg.sha512",
@@ -19,6 +19,7 @@
     "C:\\Users\\15416\\.nuget\\packages\\microsoft.maui.graphics.win2d.winui.desktop\\7.0.86\\microsoft.maui.graphics.win2d.winui.desktop.7.0.86.nupkg.sha512",
     "C:\\Users\\15416\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.22621.755\\microsoft.windows.sdk.buildtools.10.0.22621.755.nupkg.sha512",
     "C:\\Users\\15416\\.nuget\\packages\\microsoft.windowsappsdk\\1.2.221209.1\\microsoft.windowsappsdk.1.2.221209.1.nupkg.sha512",
+    "C:\\Users\\15416\\.nuget\\packages\\npgsql\\7.0.6\\npgsql.7.0.6.nupkg.sha512",
     "C:\\Users\\15416\\.nuget\\packages\\xamarin.android.glide\\4.13.2.2\\xamarin.android.glide.4.13.2.2.nupkg.sha512",
     "C:\\Users\\15416\\.nuget\\packages\\xamarin.android.glide.annotations\\4.13.2.2\\xamarin.android.glide.annotations.4.13.2.2.nupkg.sha512",
     "C:\\Users\\15416\\.nuget\\packages\\xamarin.android.glide.disklrucache\\4.13.2.2\\xamarin.android.glide.disklrucache.4.13.2.2.nupkg.sha512",
